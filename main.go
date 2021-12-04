@@ -13,6 +13,56 @@ import (
 	"fyne.io/fyne/v2/widget"
 )
 
+func expButtonHandler(baseString, lyambdaString, amountToGenerateString, amountToDrawString, colsString string, output *widget.Entry) ([]fyne.CanvasObject, error) {
+	baseInt, err := strconv.Atoi(baseString)
+	if err != nil {
+		return nil, errors.New("неправильно задана база генератора")
+	}
+
+	lyambdaInt, err := strconv.Atoi(lyambdaString)
+	if err != nil {
+		return nil, errors.New("неправильно задана лямбда")
+	}
+	if lyambdaInt <= 0 {
+		return nil, errors.New("лямбда не может быть меньше или равна 0")
+	}
+
+	amountToGenerateInt, err := strconv.Atoi(amountToGenerateString)
+	if err != nil {
+		return nil, errors.New("неправильно задано количество для генерации")
+	}
+
+	amountToDrawInt, err := strconv.Atoi(amountToDrawString)
+	if err != nil {
+		return nil, errors.New("неправильно задан размер выборки")
+	}
+
+	if amountToDrawInt > amountToGenerateInt {
+		return nil, errors.New("размер выборки не может быть больше количества для генерации")
+	}
+
+	colsInt, err := strconv.Atoi(colsString)
+	if err != nil {
+		return nil, errors.New("неправильно задано количество столбцов гистограммы")
+	}
+
+	if colsInt > amountToDrawInt {
+		return nil, errors.New("количество стобцов гистограммы не может быть больше выборки")
+	}
+
+	arr := generator.ExpGenerate(lyambdaInt, amountToGenerateInt, baseInt)
+	var resultString string
+	for _, v := range arr {
+		resultString += fmt.Sprintf("%f", v) + "\n"
+	}
+
+	gistCols := generator.Draw(arr[:amountToDrawInt], colsInt)
+
+	output.SetText(resultString)
+
+	return gistCols, nil
+}
+
 func linearButtonHandler(baseString, lowerString, upperString, amountToGenerateString, amountToDrawString, colsString string, output *widget.Entry) ([]fyne.CanvasObject, error) {
 	baseInt, err := strconv.Atoi(baseString)
 	if err != nil {
@@ -208,20 +258,36 @@ func main() {
 				input2.SetPlaceHolder("Нижняя граница")
 				input2.Refresh()
 				label3.Text = "Верхняя граница"
+				label3.Show()
 				label3.Refresh()
 				input3.SetPlaceHolder("Верхняя граница")
+				input3.Show()
 				input3.Refresh()
 			}
-		case "Нормальный", "Экспоненциальный":
+		case "Нормальный":
 			{
 				label2.Text = "Мат. ожидание"
 				label2.Refresh()
 				input2.SetPlaceHolder("Мат. ожидание")
+				label3.Show()
 				input2.Refresh()
 				label3.Text = "Дисперсия"
 				label3.Refresh()
 				input3.SetPlaceHolder("Дисперсия")
+				input3.Show()
 				input3.Refresh()
+			}
+		case "Экспоненциальный":
+			{
+				{
+					label2.Text = "Параметр λ"
+					label2.Refresh()
+					input2.SetPlaceHolder("Параметр λ")
+					input2.SetText("10")
+					input2.Refresh()
+					label3.Hide()
+					input3.Hide()
+				}
 			}
 		case "Дискретный":
 
@@ -251,6 +317,17 @@ func main() {
 		case "Нормальный":
 			{
 				newGistCols, err := normalButtonHandler(input1.Text, input2.Text, input3.Text, input4.Text, input5.Text, input6.Text, output)
+				if err != nil {
+					errorPopUp := widget.NewPopUp(widget.NewLabel(err.Error()), myWindow.Canvas())
+					errorPopUp.Move(fyne.NewPos(200, 200))
+					errorPopUp.Show()
+				}
+
+				tabCont.Content = container.NewWithoutLayout(newGistCols...)
+			}
+		case "Экспоненциальный":
+			{
+				newGistCols, err := expButtonHandler(input1.Text, input2.Text, input4.Text, input5.Text, input6.Text, output)
 				if err != nil {
 					errorPopUp := widget.NewPopUp(widget.NewLabel(err.Error()), myWindow.Canvas())
 					errorPopUp.Move(fyne.NewPos(200, 200))

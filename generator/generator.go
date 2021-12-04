@@ -61,6 +61,21 @@ func NormalGenerate(mathExpectation, dispersion, amount, base int) []float32 {
 	return ret
 }
 
+func ExpGenerate(lyambda, amount, base int) []float32 {
+	var ret []float32
+	seed = int32(base)
+	for i := 0; i < amount; i++ {
+		randomInt := lcgInt()
+		randomFloat := math.Abs(float64(intToFloat(randomInt)))
+
+		res := float32(float64(-1) / float64(lyambda) * math.Log(1-randomFloat))
+
+		ret = append(ret, res)
+	}
+
+	return ret
+}
+
 func partition(arr []float32, low, high int) ([]float32, int) {
 	pivot := arr[high]
 	i := low
