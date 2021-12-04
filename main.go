@@ -56,7 +56,63 @@ func linearButtonHandler(baseString, lowerString, upperString, amountToGenerateS
 		return nil, errors.New("количество стобцов гистограммы не может быть больше выборки")
 	}
 
-	arr := generator.Generate(lowerInt, upperInt, amountToGenerateInt, baseInt)
+	arr := generator.LinearGenerate(lowerInt, upperInt, amountToGenerateInt, baseInt)
+	var resultString string
+	for _, v := range arr {
+		resultString += fmt.Sprintf("%f", v) + "\n"
+	}
+
+	gistCols := generator.Draw(arr[:amountToDrawInt], colsInt)
+
+	output.SetText(resultString)
+
+	return gistCols, nil
+}
+
+func normalButtonHandler(baseString, mathExpectationString, dispersionString, amountToGenerateString, amountToDrawString, colsString string, output *widget.Entry) ([]fyne.CanvasObject, error) {
+	baseInt, err := strconv.Atoi(baseString)
+	if err != nil {
+		return nil, errors.New("неправильно задана база генератора")
+	}
+
+	mathExpectationInt, err := strconv.Atoi(mathExpectationString)
+	if err != nil {
+		return nil, errors.New("неправильно задано мат. ожидание")
+	}
+
+	dispersionInt, err := strconv.Atoi(dispersionString)
+	if err != nil {
+		return nil, errors.New("неправилтно задана дисперсия")
+	}
+
+	if dispersionInt < 0 {
+		return nil, errors.New("дисперсия не может быть меньше нуля")
+	}
+
+	amountToGenerateInt, err := strconv.Atoi(amountToGenerateString)
+	if err != nil {
+		return nil, errors.New("неправильно задано количество для генерации")
+	}
+
+	colsInt, err := strconv.Atoi(colsString)
+	if err != nil {
+		return nil, errors.New("неправильно задано количество столбцов гистограммы")
+	}
+
+	amountToDrawInt, err := strconv.Atoi(amountToDrawString)
+	if err != nil {
+		return nil, errors.New("неправильно задан размер выборки")
+	}
+
+	if amountToDrawInt > amountToGenerateInt {
+		return nil, errors.New("размер выборки не может быть больше количества для генерации")
+	}
+
+	if colsInt > amountToDrawInt {
+		return nil, errors.New("количество стобцов гистограммы не может быть больше выборки")
+	}
+
+	arr := generator.NormalGenerate(mathExpectationInt, dispersionInt, amountToGenerateInt, baseInt)
 	var resultString string
 	for _, v := range arr {
 		resultString += fmt.Sprintf("%f", v) + "\n"
@@ -118,7 +174,7 @@ func main() {
 	label6 := models.CreateLabel("Кол-во столбцов гистограммы")
 	objects = append(objects, label6)
 
-	input6 := models.CreateInput("Кол-во столбцов гистограммы", "25")
+	input6 := models.CreateInput("Кол-во столбцов гистограммы", "16")
 	objects = append(objects, input6)
 
 	output := widget.NewMultiLineEntry()
@@ -180,14 +236,30 @@ func main() {
 	)
 
 	button.OnTapped = func() {
-		newGistCols, err := linearButtonHandler(input1.Text, input2.Text, input3.Text, input4.Text, input5.Text, input6.Text, output)
-		if err != nil {
-			errorPopUp := widget.NewPopUp(widget.NewLabel(err.Error()), myWindow.Canvas())
-			errorPopUp.Move(fyne.NewPos(200, 200))
-			errorPopUp.Show()
-		}
+		switch radio.Selected {
+		case "Равномерный":
+			{
+				newGistCols, err := linearButtonHandler(input1.Text, input2.Text, input3.Text, input4.Text, input5.Text, input6.Text, output)
+				if err != nil {
+					errorPopUp := widget.NewPopUp(widget.NewLabel(err.Error()), myWindow.Canvas())
+					errorPopUp.Move(fyne.NewPos(200, 200))
+					errorPopUp.Show()
+				}
 
-		tabCont.Content = container.NewWithoutLayout(newGistCols...)
+				tabCont.Content = container.NewWithoutLayout(newGistCols...)
+			}
+		case "Нормальный":
+			{
+				newGistCols, err := normalButtonHandler(input1.Text, input2.Text, input3.Text, input4.Text, input5.Text, input6.Text, output)
+				if err != nil {
+					errorPopUp := widget.NewPopUp(widget.NewLabel(err.Error()), myWindow.Canvas())
+					errorPopUp.Move(fyne.NewPos(200, 200))
+					errorPopUp.Show()
+				}
+
+				tabCont.Content = container.NewWithoutLayout(newGistCols...)
+			}
+		}
 	}
 
 	myWindow.SetContent(tabs)
