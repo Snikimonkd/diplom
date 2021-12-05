@@ -5,6 +5,7 @@ import (
 	"diplom/models"
 	"errors"
 	"fmt"
+	"os"
 	"strconv"
 
 	"fyne.io/fyne/v2"
@@ -12,6 +13,63 @@ import (
 	"fyne.io/fyne/v2/container"
 	"fyne.io/fyne/v2/widget"
 )
+
+func binomialButtonHandler(baseString, probabilityString, levelString, amountToGenerateString, amountToDrawString string, output *widget.Entry) ([]fyne.CanvasObject, error) {
+	baseInt, err := strconv.Atoi(baseString)
+	if err != nil {
+		return nil, errors.New("неправильно задана база генератора")
+	}
+
+	probabilityFloat, err := strconv.ParseFloat(probabilityString, 32)
+	if err != nil {
+		return nil, errors.New("неправильно задана вероятность")
+	}
+
+	if probabilityFloat > 1 || probabilityFloat < 0 {
+		return nil, errors.New("неправильно задана вероятность")
+	}
+
+	levelInt, err := strconv.Atoi(levelString)
+	if err != nil {
+		return nil, errors.New("неправилтно задана степень полинома")
+	}
+
+	if levelInt < 1 {
+		return nil, errors.New("степень полинома не может быть меньше 1")
+	}
+
+	amountToGenerateInt, err := strconv.Atoi(amountToGenerateString)
+	if err != nil {
+		return nil, errors.New("неправильно задано количество для генерации")
+	}
+
+	amountToDrawInt, err := strconv.Atoi(amountToDrawString)
+	if err != nil {
+		return nil, errors.New("неправильно задан размер выборки")
+	}
+
+	if amountToDrawInt > amountToGenerateInt {
+		return nil, errors.New("размер выборки не может быть больше количества для генерации")
+	}
+
+	arr := generator.Binomial(float32(probabilityFloat), levelInt, amountToGenerateInt, baseInt)
+	var resultString string
+	i := 0
+	for _, v := range arr {
+		if i == 30 {
+			i = 0
+			resultString += "\n"
+		}
+		resultString += fmt.Sprintf("%d", int(v)) + "\t"
+		i++
+	}
+
+	gistCols := generator.Draw(arr, levelInt+1)
+
+	output.SetText(resultString)
+
+	return gistCols, nil
+}
 
 func expButtonHandler(baseString, lyambdaString, amountToGenerateString, amountToDrawString, colsString string, output *widget.Entry) ([]fyne.CanvasObject, error) {
 	baseInt, err := strconv.Atoi(baseString)
@@ -176,8 +234,11 @@ func normalButtonHandler(baseString, mathExpectationString, dispersionString, am
 }
 
 func main() {
+	os.Setenv("FYNE_THEME", "dark")
 	myApp := app.New()
+
 	myWindow := myApp.NewWindow("Laba")
+
 	myWindow.Resize(fyne.Size{Width: models.WindowWidth, Height: models.WindowHeight})
 	myWindow.SetFixedSize(true)
 
@@ -263,6 +324,8 @@ func main() {
 				input3.SetPlaceHolder("Верхняя граница")
 				input3.Show()
 				input3.Refresh()
+				label6.Show()
+				input6.Show()
 			}
 		case "Нормальный":
 			{
@@ -276,6 +339,8 @@ func main() {
 				input3.SetPlaceHolder("Дисперсия")
 				input3.Show()
 				input3.Refresh()
+				label6.Show()
+				input6.Show()
 			}
 		case "Экспоненциальный":
 			{
@@ -287,10 +352,25 @@ func main() {
 					input2.Refresh()
 					label3.Hide()
 					input3.Hide()
+					label6.Show()
+					input6.Show()
 				}
 			}
 		case "Дискретный":
-
+			label2.Text = "Вероятность"
+			label2.Refresh()
+			input2.SetPlaceHolder("Вероятность")
+			input2.SetText("0.5")
+			input2.Refresh()
+			label3.Text = "Степень полинома"
+			label3.Show()
+			label3.Refresh()
+			input3.SetPlaceHolder("Степень полинома")
+			input3.Show()
+			input3.SetText("4")
+			input3.Refresh()
+			label6.Hide()
+			input6.Hide()
 		}
 	}
 
@@ -328,6 +408,17 @@ func main() {
 		case "Экспоненциальный":
 			{
 				newGistCols, err := expButtonHandler(input1.Text, input2.Text, input4.Text, input5.Text, input6.Text, output)
+				if err != nil {
+					errorPopUp := widget.NewPopUp(widget.NewLabel(err.Error()), myWindow.Canvas())
+					errorPopUp.Move(fyne.NewPos(200, 200))
+					errorPopUp.Show()
+				}
+
+				tabCont.Content = container.NewWithoutLayout(newGistCols...)
+			}
+		case "Дискретный":
+			{
+				newGistCols, err := binomialButtonHandler(input1.Text, input2.Text, input3.Text, input4.Text, input5.Text, output)
 				if err != nil {
 					errorPopUp := widget.NewPopUp(widget.NewLabel(err.Error()), myWindow.Canvas())
 					errorPopUp.Move(fyne.NewPos(200, 200))

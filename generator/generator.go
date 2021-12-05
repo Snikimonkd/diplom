@@ -2,6 +2,7 @@ package generator
 
 import (
 	"diplom/models"
+	"image/color"
 	"math"
 
 	"fyne.io/fyne/v2"
@@ -112,7 +113,7 @@ func distribution(arr []float32, cols int) []int {
 	i := 0
 
 	for _, v := range sortArr {
-		if v < (min + float32(i+1)*groupSize) {
+		if v <= (min + float32(i+1)*groupSize) {
 			distr[i]++
 		} else {
 			i++
@@ -121,7 +122,7 @@ func distribution(arr []float32, cols int) []int {
 		}
 	}
 
-	return distr[:len(distr)-1]
+	return distr
 }
 
 func findMax(arr []int) int {
@@ -144,11 +145,41 @@ func Draw(arr []float32, cols int) []fyne.CanvasObject {
 	height := 700 / max
 
 	ret := []fyne.CanvasObject{}
+	//ret = append(ret, models.CreateRectangel(fyne.NewSize(800, 800), fyne.NewPos(0, 0), color.White))
 
 	for i, v := range distr {
-		pos := fyne.NewPos(float32(i*width), float32(750-height*v))
+		pos := fyne.NewPos(float32(i*width)+models.DefaultHorizontalPadding, float32(750-height*v))
 		size := fyne.NewSize(float32(width), float32(height*v))
-		ret = append(ret, models.CreateRectangel(size, pos))
+		ret = append(ret, models.CreateRectangel(size, pos, color.Black))
+	}
+
+	return ret
+}
+
+func bernoulli(p float32) float32 {
+	q := 1.0 - p
+	U := float32(math.Abs(float64(intToFloat(lcgInt()))))
+	if U > q {
+		return 1
+	}
+
+	return 0
+}
+
+func binomialBernoulli(p float32, n int) float32 {
+	var sum float32 = 0
+	for i := 0; i < n; i++ {
+		sum += bernoulli(p)
+	}
+
+	return sum
+}
+
+func Binomial(p float32, n, amount, base int) []float32 {
+	seed = int32(base)
+	ret := []float32{}
+	for i := 0; i < amount; i++ {
+		ret = append(ret, binomialBernoulli(p, n))
 	}
 
 	return ret

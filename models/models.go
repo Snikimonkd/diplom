@@ -40,8 +40,8 @@ func CreateLabel(placeHolder string) *canvas.Text {
 	return text
 }
 
-func CreateRectangel(size fyne.Size, pos fyne.Position) *canvas.Rectangle {
-	rect := canvas.NewRectangle(color.Opaque)
+func CreateRectangel(size fyne.Size, pos fyne.Position, color color.Color) *canvas.Rectangle {
+	rect := canvas.NewRectangle(color)
 	rect.Resize(size)
 	rect.Move(pos)
 	return rect
