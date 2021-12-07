@@ -16,7 +16,7 @@ func BinomialButtonHandler(baseString, probabilityString, levelString, amountToG
 		return nil, errors.New("неправильно задана база генератора")
 	}
 
-	probabilityFloat, err := strconv.ParseFloat(probabilityString, 32)
+	probabilityFloat, err := strconv.ParseFloat(probabilityString, 64)
 	if err != nil {
 		return nil, errors.New("неправильно задана вероятность")
 	}
@@ -49,10 +49,16 @@ func BinomialButtonHandler(baseString, probabilityString, levelString, amountToG
 	}
 
 	arr := generator.Binomial(probabilityFloat, levelInt, amountToGenerateInt, baseInt)
-	var resultString string
+
+	resultString := "Теоретические значения вероятностей для полинома " + levelString + " степени:\n"
+
+	for i := 0; i <= levelInt; i++ {
+		resultString += "P(" + strconv.Itoa(i) + ")=" + fmt.Sprintf("%f\n", generator.Ver(probabilityFloat, levelInt, i))
+	}
+
 	i := 0
 	for _, v := range arr {
-		if i == 30 {
+		if i == 20 {
 			i = 0
 			resultString += "\n"
 		}

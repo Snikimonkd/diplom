@@ -184,3 +184,20 @@ func Binomial(p float64, n, amount, base int) []float64 {
 
 	return ret
 }
+
+func factorail(n int) int {
+	ret := 1
+	for i := 1; i <= n; i++ {
+		ret *= i
+	}
+
+	return ret
+}
+
+func Combination(n, k int) int {
+	return factorail(n) / (factorail(k) * factorail(n-k))
+}
+
+func Ver(p float64, n, k int) float64 {
+	return float64(Combination(n, k)) * math.Pow(p, float64(k)) * math.Pow(1-p, float64(n-k))
+}
