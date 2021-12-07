@@ -8,35 +8,35 @@ import (
 	"fyne.io/fyne/v2"
 )
 
-var seed int32
+var seed int
 
-const a = 1103515245
-const c = 12345
+const a = 6364136223846793005
+const c = 1442695040888963407
 
-func lcgInt() int32 {
+func lcgInt() int {
 	seed = (a*seed + c)
 	return seed
 }
 
-func intToFloat(randInt int32) float32 {
-	return float32(randInt) / float32(math.MaxInt32)
+func intToFloat(randInt int) float64 {
+	return float64(randInt) / float64(math.MaxInt)
 }
 
-func LinearGenerate(lower, upper, amount, base int) []float32 {
-	var ret []float32
-	seed = int32(base)
+func LinearGenerate(lower, upper, amount, base int) []float64 {
+	var ret []float64
+	seed = base
 	for i := 0; i < amount; i++ {
 		randomInt := lcgInt()
 		randomFloat := intToFloat(randomInt)
 
-		ret = append(ret, float32(math.Abs(float64(randomFloat))*float64(upper-lower)+float64(lower)))
+		ret = append(ret, math.Abs(randomFloat)*float64(upper-lower)+float64(lower))
 	}
 
 	return ret
 }
 
-func normalPair() (float32, float32, float32) {
-	var s, x, y float32
+func normalPair() (float64, float64, float64) {
+	var s, x, y float64
 	s = 0
 	for s == 0 || s > 1 {
 		x = intToFloat(lcgInt())
@@ -47,29 +47,29 @@ func normalPair() (float32, float32, float32) {
 	return s, x, y
 }
 
-func NormalGenerate(mathExpectation, dispersion, amount, base int) []float32 {
-	var ret []float32
-	seed = int32(base)
+func NormalGenerate(mathExpectation, dispersion, amount, base int) []float64 {
+	var ret []float64
+	seed = base
 	for i := 0; i < amount/2; i++ {
 		s, x, y := normalPair()
 
-		z0 := x * float32(math.Sqrt(-2*math.Log(float64(s))/float64(s)))
-		z1 := y * float32(math.Sqrt(-2*math.Log(float64(s))/float64(s)))
+		z0 := x * math.Sqrt(-2*math.Log(s)/s)
+		z1 := y * math.Sqrt(-2*math.Log(s)/s)
 
-		ret = append(ret, (float32(mathExpectation) + float32(dispersion)*z0), (float32(mathExpectation) + float32(dispersion)*z1))
+		ret = append(ret, (float64(mathExpectation) + float64(dispersion)*z0), (float64(mathExpectation) + float64(dispersion)*z1))
 	}
 
 	return ret
 }
 
-func ExpGenerate(lyambda, amount, base int) []float32 {
-	var ret []float32
-	seed = int32(base)
+func ExpGenerate(lyambda, amount, base int) []float64 {
+	var ret []float64
+	seed = base
 	for i := 0; i < amount; i++ {
 		randomInt := lcgInt()
-		randomFloat := math.Abs(float64(intToFloat(randomInt)))
+		randomFloat := math.Abs(intToFloat(randomInt))
 
-		res := float32(float64(-1) / float64(lyambda) * math.Log(1-randomFloat))
+		res := float64(-1) / float64(lyambda) * math.Log(1-randomFloat)
 
 		ret = append(ret, res)
 	}
@@ -77,7 +77,7 @@ func ExpGenerate(lyambda, amount, base int) []float32 {
 	return ret
 }
 
-func partition(arr []float32, low, high int) ([]float32, int) {
+func partition(arr []float64, low, high int) ([]float64, int) {
 	pivot := arr[high]
 	i := low
 	for j := low; j < high; j++ {
@@ -90,7 +90,7 @@ func partition(arr []float32, low, high int) ([]float32, int) {
 	return arr, i
 }
 
-func quickSort(arr []float32, low, high int) []float32 {
+func quickSort(arr []float64, low, high int) []float64 {
 	if low < high {
 		var p int
 		arr, p = partition(arr, low, high)
@@ -100,20 +100,20 @@ func quickSort(arr []float32, low, high int) []float32 {
 	return arr
 }
 
-func distribution(arr []float32, cols int) []int {
+func distribution(arr []float64, cols int) []int {
 	sortArr := quickSort(arr, 0, len(arr)-1)
 
 	min := sortArr[0]
 	max := sortArr[len(sortArr)-1]
 
-	groupSize := (max - min) / float32(cols)
+	groupSize := (max - min) / float64(cols)
 
 	var distr []int
 	distr = append(distr, 0)
 	i := 0
 
 	for _, v := range sortArr {
-		if v <= (min + float32(i+1)*groupSize) {
+		if v <= (min + float64(i+1)*groupSize) {
 			distr[i]++
 		} else {
 			i++
@@ -136,7 +136,7 @@ func findMax(arr []int) int {
 	return max
 }
 
-func Draw(arr []float32, cols int) []fyne.CanvasObject {
+func Draw(arr []float64, cols int) []fyne.CanvasObject {
 	distr := distribution(arr, cols)
 
 	max := findMax(distr)
@@ -156,9 +156,9 @@ func Draw(arr []float32, cols int) []fyne.CanvasObject {
 	return ret
 }
 
-func bernoulli(p float32) float32 {
+func bernoulli(p float64) float64 {
 	q := 1.0 - p
-	U := float32(math.Abs(float64(intToFloat(lcgInt()))))
+	U := float64(math.Abs(float64(intToFloat(lcgInt()))))
 	if U > q {
 		return 1
 	}
@@ -166,8 +166,8 @@ func bernoulli(p float32) float32 {
 	return 0
 }
 
-func binomialBernoulli(p float32, n int) float32 {
-	var sum float32 = 0
+func binomialBernoulli(p float64, n int) float64 {
+	var sum float64 = 0
 	for i := 0; i < n; i++ {
 		sum += bernoulli(p)
 	}
@@ -175,9 +175,9 @@ func binomialBernoulli(p float32, n int) float32 {
 	return sum
 }
 
-func Binomial(p float32, n, amount, base int) []float32 {
-	seed = int32(base)
-	ret := []float32{}
+func Binomial(p float64, n, amount, base int) []float64 {
+	seed = base
+	ret := []float64{}
 	for i := 0; i < amount; i++ {
 		ret = append(ret, binomialBernoulli(p, n))
 	}

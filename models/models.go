@@ -34,7 +34,7 @@ func CreateButton(placeHolder string) *widget.Button {
 }
 
 func CreateLabel(placeHolder string) *canvas.Text {
-	text := canvas.NewText(placeHolder, color.White)
+	text := canvas.NewText(placeHolder, color.Black)
 	text.Alignment = fyne.TextAlignCenter
 	text.Resize(DefaultSize)
 	return text

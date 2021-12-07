@@ -52,7 +52,7 @@ func binomialButtonHandler(baseString, probabilityString, levelString, amountToG
 		return nil, errors.New("размер выборки не может быть больше количества для генерации")
 	}
 
-	arr := generator.Binomial(float32(probabilityFloat), levelInt, amountToGenerateInt, baseInt)
+	arr := generator.Binomial(probabilityFloat, levelInt, amountToGenerateInt, baseInt)
 	var resultString string
 	i := 0
 	for _, v := range arr {
@@ -234,7 +234,7 @@ func normalButtonHandler(baseString, mathExpectationString, dispersionString, am
 }
 
 func main() {
-	os.Setenv("FYNE_THEME", "dark")
+	os.Setenv("FYNE_THEME", "light")
 	myApp := app.New()
 
 	myWindow := myApp.NewWindow("Laba")
