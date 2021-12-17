@@ -15,7 +15,7 @@ func main() {
 	os.Setenv("FYNE_THEME", "light")
 	myApp := app.New()
 
-	myWindow := myApp.NewWindow("Laba")
+	myWindow := myApp.NewWindow("Лабораторная работа №1")
 
 	myWindow.Resize(fyne.Size{Width: models.WindowWidth, Height: models.WindowHeight})
 	myWindow.SetFixedSize(true)
@@ -93,15 +93,14 @@ func main() {
 		case "Равномерный":
 			{
 				label2.Text = "Нижняя граница"
-				label2.Refresh()
 				input2.SetPlaceHolder("Нижняя граница")
 				input2.Refresh()
 				label3.Text = "Верхняя граница"
-				label3.Show()
 				label3.Refresh()
+				label3.Show()
 				input3.SetPlaceHolder("Верхняя граница")
-				input3.Show()
 				input3.Refresh()
+				input3.Show()
 				label6.Show()
 				input6.Show()
 			}
@@ -122,33 +121,35 @@ func main() {
 			}
 		case "Экспоненциальный":
 			{
-				{
-					label2.Text = "Параметр λ"
-					label2.Refresh()
-					input2.SetPlaceHolder("Параметр λ")
-					input2.SetText("10")
-					input2.Refresh()
-					label3.Hide()
-					input3.Hide()
-					label6.Show()
-					input6.Show()
-				}
+
+				label2.Text = "Параметр λ"
+				label2.Refresh()
+				input2.SetPlaceHolder("Параметр λ")
+				input2.SetText("10")
+				input2.Refresh()
+				label3.Hide()
+				input3.Hide()
+				label6.Show()
+				input6.Show()
+
 			}
 		case "Дискретный":
-			label2.Text = "Вероятность"
-			label2.Refresh()
-			input2.SetPlaceHolder("Вероятность")
-			input2.SetText("0.5")
-			input2.Refresh()
-			label3.Text = "Степень полинома"
-			label3.Show()
-			label3.Refresh()
-			input3.SetPlaceHolder("Степень полинома")
-			input3.Show()
-			input3.SetText("4")
-			input3.Refresh()
-			label6.Hide()
-			input6.Hide()
+			{
+				label2.Text = "Вероятность"
+				label2.Refresh()
+				input2.SetPlaceHolder("Вероятность")
+				input2.SetText("0.5")
+				input2.Refresh()
+				label3.Text = "Степень полинома"
+				label3.Show()
+				label3.Refresh()
+				input3.SetPlaceHolder("Степень полинома")
+				input3.Show()
+				input3.SetText("4")
+				input3.Refresh()
+				label6.Hide()
+				input6.Hide()
+			}
 		}
 	}
 

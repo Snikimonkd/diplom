@@ -234,3 +234,27 @@ func NormalButtonHandler(baseString, mathExpectationString, dispersionString, am
 
 	return gistCols, nil
 }
+
+func SimModelingHandler(variantString, amountString string, output *widget.Entry) ([]generator.Model, error) {
+	variantInt, err := strconv.Atoi(variantString)
+	if err != nil {
+		return nil, errors.New("неправильно задан вариант")
+	}
+
+	amountInt, err := strconv.Atoi(amountString)
+	if err != nil {
+		return nil, errors.New("неправильно задано кол-во экспериментов")
+	}
+
+	ret := generator.Modeling(variantInt, amountInt)
+
+	startingVluesString := "Исходные данные варианта:\n"
+	startingVluesString += "C1=" + fmt.Sprintf("%.2f", ret[0].C1) + "\n"
+	startingVluesString += "C2=" + fmt.Sprintf("%.2f", ret[0].C2) + "\n"
+	startingVluesString += "C3=" + fmt.Sprintf("%.2f", ret[0].C3) + "\n"
+	startingVluesString += "B1=" + strconv.Itoa(ret[0].B1) + "\n"
+	startingVluesString += "TT=" + strconv.Itoa(ret[0].TT)
+	output.SetText(startingVluesString)
+
+	return ret, nil
+}
