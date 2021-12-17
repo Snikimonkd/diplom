@@ -1,8 +1,8 @@
 package main
 
 import (
-	"diplom/handlers"
-	"diplom/models"
+	"diplom/internal/handlers"
+	"diplom/internal/models"
 	"os"
 
 	"fyne.io/fyne/v2"

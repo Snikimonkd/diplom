@@ -1,7 +1,7 @@
 package generator
 
 import (
-	"diplom/models"
+	"diplom/internal/models"
 	"image/color"
 	"math"
 
@@ -145,7 +145,6 @@ func Draw(arr []float64, cols int) []fyne.CanvasObject {
 	height := 700 / max
 
 	ret := []fyne.CanvasObject{}
-	//ret = append(ret, models.CreateRectangel(fyne.NewSize(800, 800), fyne.NewPos(0, 0), color.White))
 
 	for i, v := range distr {
 		pos := fyne.NewPos(float32(i*width)+models.DefaultHorizontalPadding, float32(750-height*v))

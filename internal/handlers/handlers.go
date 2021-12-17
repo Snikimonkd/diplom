@@ -1,7 +1,7 @@
 package handlers
 
 import (
-	"diplom/generator"
+	"diplom/internal/generator"
 	"errors"
 	"fmt"
 	"strconv"
