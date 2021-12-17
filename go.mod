@@ -11,6 +11,7 @@ require (
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/fredbi/uri v0.0.0-20181227131451-3dcfdacbaaf3 // indirect
 	github.com/fsnotify/fsnotify v1.4.9 // indirect
+	github.com/fyne-io/fyne-cross v1.1.3 // indirect
 	github.com/go-gl/gl v0.0.0-20210813123233-e4099ee2221f // indirect
 	github.com/go-gl/glfw/v3.3/glfw v0.0.0-20210410170116-ea3d685f79fb // indirect
 	github.com/godbus/dbus/v5 v5.0.4 // indirect
