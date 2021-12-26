@@ -56,7 +56,7 @@ func main() {
 
 	objects = append(objects, output)
 
-	var ret []generator.Model
+	var ret []generator.OneProductModel
 
 	table := widget.NewTable(
 		func() (int, int) {
@@ -119,7 +119,7 @@ func main() {
 
 	objects = append(objects, table)
 
-	mainContainer := container.NewWithoutLayout(objects...)
+	oneProductContainer := container.NewWithoutLayout(objects...)
 
 	button.OnTapped = func() {
 		var err error
@@ -133,6 +133,13 @@ func main() {
 
 	}
 
-	myWindow.SetContent(mainContainer)
+	tabCont := container.NewTabItem("Многопродуктовая система", container.NewWithoutLayout([]fyne.CanvasObject{}...))
+
+	tabs := container.NewAppTabs(
+		container.NewTabItem("Однопродуктовая система", oneProductContainer),
+		tabCont,
+	)
+
+	myWindow.SetContent(tabs)
 	myWindow.ShowAndRun()
 }

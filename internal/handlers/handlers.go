@@ -276,7 +276,7 @@ func NormalButtonHandler(baseString, mathExpectationString, dispersionString, am
 	return gistCols, nil
 }
 
-func SimModelingHandler(variantString, amountString string, output *widget.Entry) ([]generator.Model, error) {
+func SimModelingHandler(variantString, amountString string, output *widget.Entry) ([]generator.OneProductModel, error) {
 	variantInt, err := strconv.Atoi(variantString)
 	if err != nil {
 		return nil, errors.New("неправильно задан вариант")
@@ -287,7 +287,7 @@ func SimModelingHandler(variantString, amountString string, output *widget.Entry
 		return nil, errors.New("неправильно задано кол-во экспериментов")
 	}
 
-	ret := generator.Modeling(variantInt, amountInt)
+	ret := generator.ModelingOneProduct(variantInt, amountInt)
 
 	startingVluesString := "Исходные данные варианта:\n"
 	startingVluesString += "C1=" + fmt.Sprintf("%.2f", ret[0].C1) + "\n"

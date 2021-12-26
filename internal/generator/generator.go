@@ -13,7 +13,7 @@ var seed int
 const a = 6364136223846793005
 const c = 1442695040888963407
 
-type Model struct {
+type OneProductModel struct {
 	// полные издержки системы
 	TC float64
 	// полные издержки, связанные с организацией поставок
@@ -46,6 +46,41 @@ type Model struct {
 	B1 int
 	// продолжительность рассматриваемого периода
 	TT int
+
+	// номер эксперимента
+	ExpNumber int
+}
+
+type MultiProductModel struct {
+	// затраты на организацию поставки
+	TOC float64
+	// затраты на хранение запасов
+	TCC float64
+	// полные затраты
+	TCOST float64
+	// объем заказа i-го продукта
+	EOQ []int
+	// критический уровень завпаса i-го продукта
+	MOP []int
+	// предкритический уровень запаса i-го продукта
+	COP []int
+	// спрос на i-ый продукт в t-ый день
+	D []int // должно быть по закону Пуассона
+	// уровень запаса i-го продукта в конце t-го дня
+	INV []int
+	// кол-во заказов на i-ый продукт в течение времени T
+	NTO []int
+	// общее число заказов в течение времени
+	TNJO int
+	// затраты на оформление одного набора заказа
+	FOC int
+	// переменные затраты на заказ i-го продукта
+	VOC []int
+	// ежедневные затраты на хранение единицы i-го продукта
+	CC []int
+
+	// текущее время
+	T int
 	// номер эксперимента
 	ExpNumber int
 }
@@ -256,8 +291,8 @@ func Ver(p float64, n, k int) float64 {
 	return float64(Combination(n, k)) * math.Pow(p, float64(k)) * math.Pow(1-p, float64(n-k))
 }
 
-func generateModel() Model {
-	var model Model
+func generateOneProductModel() OneProductModel {
+	var model OneProductModel
 	// начальное положение системы
 	model.CLOCK = 0
 	model.T = 0
@@ -276,19 +311,19 @@ func generateModel() Model {
 	model.C3 = randomFloatWithBorders(0, 8)
 
 	model.TT = randomIntWithBorders(15, 60)
-
 	model.B1 = randomIntWithBorders(100, 200)
+
 	model.V1 = model.B1
 
 	return model
 }
 
-func Modeling(variant, amount int) []Model {
+func ModelingOneProduct(variant, amount int) []OneProductModel {
 	seed = variant
-	var ret []Model
+	var ret []OneProductModel
 
 	for i := 0; i < amount; i++ {
-		model := generateModel()
+		model := generateOneProductModel()
 		model.EOQ = randomIntWithBorders(20, 50)
 		model.ROP = randomIntWithBorders(40, 70)
 		model.ExpNumber = i + 1
@@ -329,7 +364,7 @@ func Modeling(variant, amount int) []Model {
 	return ret
 }
 
-func SortModels(arr []Model, id int) []Model {
+func SortModels(arr []OneProductModel, id int) []OneProductModel {
 	for i := 0; i < len(arr); i++ {
 		for j := i + 1; j < len(arr); j++ {
 			switch id {
@@ -416,4 +451,85 @@ func Count(arr []float64, level int) []int {
 	}
 
 	return res
+}
+
+func randArr(len, left, right int) []int {
+	var arr []int
+
+	for i := 0; i < len; i++ {
+		arr = append(arr, randomIntWithBorders(left, right))
+	}
+
+	return arr
+}
+
+func generateMultiProductModel(products int) MultiProductModel {
+	var model MultiProductModel
+
+	// начальное положение системы
+	model.T = 1
+	model.TOC = 0
+	model.TCC = 0
+	model.TCOST = 0
+	model.TNJO = 0
+	model.NTO = make([]int, products)
+	model.INV = make([]int, products) // зануляется изначально
+
+	// данные зависящие от варианта
+	model.CC = randArr(products, 0, 100)
+	model.VOC = randArr(products, 0, 20)
+	model.FOC = randomIntWithBorders(0, 20)
+
+	return model
+}
+
+func ModelingMultiProduct(variant, amountExp, amountProd int) []MultiProductModel {
+	seed = variant
+	var ret []MultiProductModel
+
+	for I := 1; I <= amountExp; I++ {
+		model := generateMultiProductModel(amountProd)
+
+		model.EOQ = append(model.EOQ, randomIntWithBorders(0, 100))
+		model.MOP = append(model.EOQ, randomIntWithBorders(0, 100))
+		model.COP = append(model.COP, randomIntWithBorders(0, 100))
+
+		model.ExpNumber = I
+
+		for model.T = 1; model.T <= 90; {
+			for i := 1; i <= amountProd; i++ {
+				model.D = append(model.D, randomIntWithBorders(0, 10))
+				model.INV[i] = model.INV[i] - model.D[i]
+			}
+
+			for i := 1; i <= amountProd; i++ {
+				if model.INV[i]-model.MOP[i] <= 0 {
+					model.TNJO++
+					model.TOC += float64(model.FOC)
+					for j := 1; j <= 20; j++ {
+						if model.INV[j]-model.COP[j] <= 0 {
+							model.NTO[j]++
+							model.TOC += float64(model.VOC[j])
+							model.INV[j] += model.EOQ[j]
+							if model.INV[j] > 0 {
+								model.TCC += float64(model.CC[j] * model.INV[j])
+							}
+						}
+					}
+				} else {
+					for j := 1; j <= 20; j++ {
+						if model.INV[j] > 0 {
+							model.TCC += float64(model.CC[j] * model.INV[j])
+						}
+					}
+				}
+			}
+
+		}
+		model.TCOST = model.TOC + model.TCC
+
+		ret = append(ret, model)
+	}
+
+	return ret
 }
