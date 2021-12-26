@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"diplom/internal/generator"
+	"diplom/internal/models"
 	"errors"
 	"fmt"
 	"strconv"
@@ -58,12 +59,19 @@ func BinomialButtonHandler(baseString, probabilityString, levelString, amountToG
 
 	i := 0
 	for _, v := range arr {
-		if i == 20 {
+		if i == 10 {
 			i = 0
 			resultString += "\n"
 		}
-		resultString += fmt.Sprintf("%d", int(v)) + "\t"
+		resultString += fmt.Sprintf("%d", int(v)) + "\t|  "
 		i++
+	}
+	resultString += "\n"
+
+	resAmount := generator.Count(arr, levelInt)
+
+	for i, v := range resAmount {
+		resultString += "Кол-во сгенерированных " + fmt.Sprint(i) + " : " + fmt.Sprint(v) + "\n"
 	}
 
 	gistCols := generator.Draw(arr, levelInt+1)
@@ -119,6 +127,17 @@ func ExpButtonHandler(baseString, lyambdaString, amountToGenerateString, amountT
 	gistCols := generator.Draw(arr[:amountToDrawInt], colsInt)
 
 	output.SetText(resultString)
+
+	expValue := generator.ExpValue(arr)
+	dispValue := generator.DispValue(arr)
+
+	expValLabel := models.CreateLabel("Мат. ожидание = " + fmt.Sprintf("%.4f", expValue))
+	dispValLabel := models.CreateLabel("Дисперсия = " + fmt.Sprintf("%.4f", dispValue))
+
+	expValLabel.Move(fyne.NewPos(0, 0))
+	dispValLabel.Move(fyne.NewPos(400, 0))
+
+	gistCols = append(gistCols, expValLabel, dispValLabel)
 
 	return gistCols, nil
 }
@@ -176,6 +195,17 @@ func LinearButtonHandler(baseString, lowerString, upperString, amountToGenerateS
 
 	output.SetText(resultString)
 
+	expValue := generator.ExpValue(arr)
+	dispValue := generator.DispValue(arr)
+
+	expValLabel := models.CreateLabel("Мат. ожидание = " + fmt.Sprintf("%.4f", expValue))
+	dispValLabel := models.CreateLabel("Дисперсия = " + fmt.Sprintf("%.4f", dispValue))
+
+	expValLabel.Move(fyne.NewPos(0, 0))
+	dispValLabel.Move(fyne.NewPos(400, 0))
+
+	gistCols = append(gistCols, expValLabel, dispValLabel)
+
 	return gistCols, nil
 }
 
@@ -231,6 +261,17 @@ func NormalButtonHandler(baseString, mathExpectationString, dispersionString, am
 	gistCols := generator.Draw(arr[:amountToDrawInt], colsInt)
 
 	output.SetText(resultString)
+
+	expValue := generator.ExpValue(arr)
+	dispValue := generator.DispValue(arr)
+
+	expValLabel := models.CreateLabel("Мат. ожидание = " + fmt.Sprintf("%.4f", expValue))
+	dispValLabel := models.CreateLabel("Дисперсия = " + fmt.Sprintf("%.4f", dispValue))
+
+	expValLabel.Move(fyne.NewPos(0, 0))
+	dispValLabel.Move(fyne.NewPos(400, 0))
+
+	gistCols = append(gistCols, expValLabel, dispValLabel)
 
 	return gistCols, nil
 }

@@ -161,16 +161,18 @@ func distribution(arr []float64, cols int) []int {
 
 	groupSize := (max - min) / float64(cols)
 
-	var distr []int
+	distr := make([]int, cols)
 	distr = append(distr, 0)
 	i := 0
 
+	current := min + groupSize
+
 	for _, v := range sortArr {
-		if v <= (min + float64(i+1)*groupSize) {
+		if v <= current {
 			distr[i]++
 		} else {
 			i++
-			distr = append(distr, 0)
+			current += groupSize
 			distr[i]++
 		}
 	}
@@ -194,13 +196,13 @@ func Draw(arr []float64, cols int) []fyne.CanvasObject {
 
 	max := findMax(distr)
 
-	width := int(models.WindowWidth-30) / cols
+	width := int(models.WindowWidth-30)/cols - 1
 	height := 700 / max
 
 	ret := []fyne.CanvasObject{}
 
 	for i, v := range distr {
-		pos := fyne.NewPos(float32(i*width)+models.DefaultHorizontalPadding, float32(750-height*v))
+		pos := fyne.NewPos(float32(i*width)+models.DefaultHorizontalPadding+float32(i), float32(750-height*v))
 		size := fyne.NewSize(float32(width), float32(height*v))
 		ret = append(ret, models.CreateRectangel(size, pos, color.Black))
 	}
@@ -265,8 +267,8 @@ func generateModel() Model {
 	model.TC = 0
 
 	// данные, которые мы перебираем с целью поиска наилучшего варианта
-	model.EOQ = randomIntWithBorders(0, 10)
-	model.ROP = randomIntWithBorders(0, 10)
+	model.EOQ = 0
+	model.ROP = 0
 
 	// данные, зависящие от варианта
 	model.C1 = randomFloatWithBorders(0, 10)
@@ -378,4 +380,40 @@ func SortModels(arr []Model, id int) []Model {
 	}
 
 	return arr
+}
+
+func ExpValue(arr []float64) float64 {
+	res := 0.0
+
+	len := float64(len(arr))
+
+	for _, v := range arr {
+		res += v / len
+	}
+
+	return res
+}
+
+func DispValue(arr []float64) float64 {
+	exp := 0.0
+	buf := 0.0
+
+	len := float64(len(arr))
+
+	for _, v := range arr {
+		buf = buf + v*v/len
+		exp += v / len
+	}
+
+	return math.Sqrt(buf - exp*exp)
+}
+
+func Count(arr []float64, level int) []int {
+	res := make([]int, level+1)
+
+	for _, v := range arr {
+		res[int(v)]++
+	}
+
+	return res
 }
