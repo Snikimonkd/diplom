@@ -76,7 +76,7 @@ func main() {
 				}
 			case "Многопродуктовая":
 				{
-					return len(retMulti) + 1, 7
+					return len(retMulti) + 1, 4
 				}
 			}
 			return 0, 0
@@ -132,16 +132,10 @@ func main() {
 						case 0:
 							obj.(*widget.Label).SetText("№")
 						case 1:
-							obj.(*widget.Label).SetText("MOP")
-						case 2:
-							obj.(*widget.Label).SetText("EOQ")
-						case 3:
-							obj.(*widget.Label).SetText("COP")
-						case 4:
 							obj.(*widget.Label).SetText("TOC")
-						case 5:
+						case 2:
 							obj.(*widget.Label).SetText("TCC")
-						case 6:
+						case 3:
 							obj.(*widget.Label).SetText("TCOST")
 						}
 					} else {
@@ -149,16 +143,10 @@ func main() {
 						case 0:
 							obj.(*widget.Label).SetText(fmt.Sprintf("%d", retMulti[i.Row-1].ExpNumber))
 						case 1:
-							obj.(*widget.Label).SetText(fmt.Sprintf("%d", retMulti[i.Row-1].MOP))
-						case 2:
-							obj.(*widget.Label).SetText(fmt.Sprintf("%d", retMulti[i.Row-1].EOQ))
-						case 3:
-							obj.(*widget.Label).SetText(fmt.Sprintf("%d", retMulti[i.Row-1].COP))
-						case 4:
 							obj.(*widget.Label).SetText(fmt.Sprintf("%.2f", retMulti[i.Row-1].TOC))
-						case 5:
+						case 2:
 							obj.(*widget.Label).SetText(fmt.Sprintf("%.2f", retMulti[i.Row-1].TCC))
-						case 6:
+						case 3:
 							obj.(*widget.Label).SetText(fmt.Sprintf("%.2f", retMulti[i.Row-1].TCOST))
 						}
 
@@ -192,6 +180,24 @@ func main() {
 	}
 
 	radio.OnChanged = func(value string) {
+		switch value {
+		case "Однопродуктовая":
+			{
+				tableOne.SetColumnWidth(0, 30)
+				tableOne.SetColumnWidth(1, 50)
+				tableOne.SetColumnWidth(2, 50)
+				tableOne.SetColumnWidth(3, 100)
+				tableOne.SetColumnWidth(4, 100)
+				tableOne.SetColumnWidth(5, 100)
+			}
+		case "Многопродуктовая":
+			{
+				tableOne.SetColumnWidth(0, 30)
+				tableOne.SetColumnWidth(1, 100)
+				tableOne.SetColumnWidth(2, 100)
+				tableOne.SetColumnWidth(3, 100)
+			}
+		}
 		tableOne.Refresh()
 	}
 

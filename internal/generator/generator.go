@@ -481,9 +481,6 @@ func generateMultiProductModel() MultiProductModel {
 	model.VOC = randArr(model.PRAM, 0, 20)
 	model.FOC = randomIntWithBorders(0, 20)
 
-	model.NTO = make([]int, model.PRAM)
-	model.INV = make([]int, model.PRAM) // зануляется изначально
-
 	return model
 }
 
@@ -491,13 +488,17 @@ func ModelingMultiProduct(variant, amountExp int) []MultiProductModel {
 	seed = variant
 	var ret []MultiProductModel
 
+	model := generateMultiProductModel()
+
 	for k := 0; k < amountExp; k++ {
-		model := generateMultiProductModel()
 
 		model.EOQ = randArr(model.PRAM, 50, 100)
 		model.MOP = randArr(model.PRAM, 0, 10)
 		model.COP = randArr(model.PRAM, 10, 20)
+
 		model.ExpNumber = k
+
+		model.NTO = make([]int, model.PRAM)
 		model.INV = make([]int, model.PRAM)
 
 		for model.T = 0; model.T < 90; model.T++ {
