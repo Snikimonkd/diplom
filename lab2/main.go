@@ -24,6 +24,14 @@ func main() {
 
 	objects := []fyne.CanvasObject{}
 
+	radioLabel := models.CreateLabel("Вид системы")
+	objects = append(objects, radioLabel)
+
+	radio := widget.NewRadioGroup([]string{"Однопродуктовая", "Многопродуктовая"}, nil)
+	radio.SetSelected("Однопродуктовая")
+	radio.Resize(radio.MinSize())
+	objects = append(objects, radio)
+
 	label0 := models.CreateLabel("Вариант")
 	objects = append(objects, label0)
 
@@ -56,90 +64,168 @@ func main() {
 
 	objects = append(objects, output)
 
-	var ret []generator.OneProductModel
+	var retOne []generator.OneProductModel
+	var retMulti []generator.MultiProductModel
 
-	table := widget.NewTable(
+	tableOne := widget.NewTable(
 		func() (int, int) {
-			return len(ret) + 1, 7
+			switch radio.Selected {
+			case "Однопродуктовая":
+				{
+					return len(retOne) + 1, 7
+				}
+			case "Многопродуктовая":
+				{
+					return len(retMulti) + 1, 7
+				}
+			}
+			return 0, 0
 		},
 		func() fyne.CanvasObject {
 			return widget.NewLabel("   ")
 		},
 		func(i widget.TableCellID, obj fyne.CanvasObject) {
-			if i.Row == 0 {
-				switch i.Col {
-				case 0:
-					obj.(*widget.Label).SetText("№")
-				case 1:
-					obj.(*widget.Label).SetText("ROP")
-				case 2:
-					obj.(*widget.Label).SetText("EOQ")
-				case 3:
-					obj.(*widget.Label).SetText("TC1")
-				case 4:
-					obj.(*widget.Label).SetText("TC2")
-				case 5:
-					obj.(*widget.Label).SetText("TC3")
-				case 6:
-					obj.(*widget.Label).SetText("TC")
-				}
-			} else {
-				switch i.Col {
-				case 0:
-					obj.(*widget.Label).SetText(fmt.Sprintf("%d", ret[i.Row-1].ExpNumber))
-				case 1:
-					obj.(*widget.Label).SetText(fmt.Sprintf("%d", ret[i.Row-1].ROP))
-				case 2:
-					obj.(*widget.Label).SetText(fmt.Sprintf("%d", ret[i.Row-1].EOQ))
-				case 3:
-					obj.(*widget.Label).SetText(fmt.Sprintf("%.2f", ret[i.Row-1].TC1))
-				case 4:
-					obj.(*widget.Label).SetText(fmt.Sprintf("%.2f", ret[i.Row-1].TC2))
-				case 5:
-					obj.(*widget.Label).SetText(fmt.Sprintf("%.2f", ret[i.Row-1].TC3))
-				case 6:
-					obj.(*widget.Label).SetText(fmt.Sprintf("%.2f", ret[i.Row-1].TC))
-				}
+			switch radio.Selected {
+			case "Однопродуктовая":
+				{
+					if i.Row == 0 {
+						switch i.Col {
+						case 0:
+							obj.(*widget.Label).SetText("№")
+						case 1:
+							obj.(*widget.Label).SetText("ROP")
+						case 2:
+							obj.(*widget.Label).SetText("EOQ")
+						case 3:
+							obj.(*widget.Label).SetText("TC1")
+						case 4:
+							obj.(*widget.Label).SetText("TC2")
+						case 5:
+							obj.(*widget.Label).SetText("TC3")
+						case 6:
+							obj.(*widget.Label).SetText("TC")
+						}
+					} else {
+						switch i.Col {
+						case 0:
+							obj.(*widget.Label).SetText(fmt.Sprintf("%d", retOne[i.Row-1].ExpNumber))
+						case 1:
+							obj.(*widget.Label).SetText(fmt.Sprintf("%d", retOne[i.Row-1].ROP))
+						case 2:
+							obj.(*widget.Label).SetText(fmt.Sprintf("%d", retOne[i.Row-1].EOQ))
+						case 3:
+							obj.(*widget.Label).SetText(fmt.Sprintf("%.2f", retOne[i.Row-1].TC1))
+						case 4:
+							obj.(*widget.Label).SetText(fmt.Sprintf("%.2f", retOne[i.Row-1].TC2))
+						case 5:
+							obj.(*widget.Label).SetText(fmt.Sprintf("%.2f", retOne[i.Row-1].TC3))
+						case 6:
+							obj.(*widget.Label).SetText(fmt.Sprintf("%.2f", retOne[i.Row-1].TC))
+						}
 
+					}
+				}
+			case "Многопродуктовая":
+				{
+					if i.Row == 0 {
+						switch i.Col {
+						case 0:
+							obj.(*widget.Label).SetText("№")
+						case 1:
+							obj.(*widget.Label).SetText("MOP")
+						case 2:
+							obj.(*widget.Label).SetText("EOQ")
+						case 3:
+							obj.(*widget.Label).SetText("COP")
+						case 4:
+							obj.(*widget.Label).SetText("TOC")
+						case 5:
+							obj.(*widget.Label).SetText("TCC")
+						case 6:
+							obj.(*widget.Label).SetText("TCOST")
+						}
+					} else {
+						switch i.Col {
+						case 0:
+							obj.(*widget.Label).SetText(fmt.Sprintf("%d", retMulti[i.Row-1].ExpNumber))
+						case 1:
+							obj.(*widget.Label).SetText(fmt.Sprintf("%d", retMulti[i.Row-1].MOP))
+						case 2:
+							obj.(*widget.Label).SetText(fmt.Sprintf("%d", retMulti[i.Row-1].EOQ))
+						case 3:
+							obj.(*widget.Label).SetText(fmt.Sprintf("%d", retMulti[i.Row-1].COP))
+						case 4:
+							obj.(*widget.Label).SetText(fmt.Sprintf("%.2f", retMulti[i.Row-1].TOC))
+						case 5:
+							obj.(*widget.Label).SetText(fmt.Sprintf("%.2f", retMulti[i.Row-1].TCC))
+						case 6:
+							obj.(*widget.Label).SetText(fmt.Sprintf("%.2f", retMulti[i.Row-1].TCOST))
+						}
+
+					}
+				}
 			}
-		})
-	table.SetColumnWidth(0, 30)
-	table.SetColumnWidth(1, 50)
-	table.SetColumnWidth(2, 50)
-	table.SetColumnWidth(3, 100)
-	table.SetColumnWidth(4, 100)
-	table.SetColumnWidth(5, 100)
-	table.Resize(fyne.NewSize(models.WindowWidth-models.DefaultWidth-40, 600))
-	table.Move(fyne.NewPos(models.DefaultHorizontalPadding, 3*models.DefaultVerticalPadding+150))
 
-	table.OnSelected = func(id widget.TableCellID) {
-		ret = generator.SortModels(ret, id.Col)
-		table.Refresh()
+		})
+	tableOne.SetColumnWidth(0, 30)
+	tableOne.SetColumnWidth(1, 50)
+	tableOne.SetColumnWidth(2, 50)
+	tableOne.SetColumnWidth(3, 100)
+	tableOne.SetColumnWidth(4, 100)
+	tableOne.SetColumnWidth(5, 100)
+	tableOne.Resize(fyne.NewSize(models.WindowWidth-models.DefaultWidth-40, 600))
+	tableOne.Move(fyne.NewPos(models.DefaultHorizontalPadding, 3*models.DefaultVerticalPadding+150))
+
+	tableOne.OnSelected = func(id widget.TableCellID) {
+		switch radio.Selected {
+		case "Однопродуктовая":
+			{
+				retOne = generator.SortModelsOne(retOne, id.Col)
+				tableOne.Refresh()
+			}
+		case "Многопродуктовая":
+			{
+				//retMulti = generator.SortModelsMulti(retMulti, id.Col)
+				tableOne.Refresh()
+			}
+		}
 	}
 
-	objects = append(objects, table)
+	radio.OnChanged = func(value string) {
+		tableOne.Refresh()
+	}
 
-	oneProductContainer := container.NewWithoutLayout(objects...)
+	objects = append(objects, tableOne)
+
+	mainContainer := container.NewWithoutLayout(objects...)
 
 	button.OnTapped = func() {
-		var err error
-		ret, err = handlers.SimModelingHandler(input0.Text, input1.Text, output)
-		if err != nil {
-			errorPopUp := widget.NewPopUp(widget.NewLabel(err.Error()), myWindow.Canvas())
-			errorPopUp.Move(fyne.NewPos(200, 200))
-			errorPopUp.Show()
+		switch radio.Selected {
+		case "Однопродуктовая":
+			{
+				var err error
+				retOne, err = handlers.OneProductHandler(input0.Text, input1.Text, output)
+				if err != nil {
+					errorPopUp := widget.NewPopUp(widget.NewLabel(err.Error()), myWindow.Canvas())
+					errorPopUp.Move(fyne.NewPos(200, 200))
+					errorPopUp.Show()
+				}
+				tableOne.Refresh()
+			}
+		case "Многопродуктовая":
+			{
+				var err error
+				retMulti, err = handlers.MultiProductHandler(input0.Text, input1.Text, output)
+				if err != nil {
+					errorPopUp := widget.NewPopUp(widget.NewLabel(err.Error()), myWindow.Canvas())
+					errorPopUp.Move(fyne.NewPos(200, 200))
+					errorPopUp.Show()
+				}
+				tableOne.Refresh()
+			}
 		}
-		table.Refresh()
-
 	}
 
-	tabCont := container.NewTabItem("Многопродуктовая система", container.NewWithoutLayout([]fyne.CanvasObject{}...))
-
-	tabs := container.NewAppTabs(
-		container.NewTabItem("Однопродуктовая система", oneProductContainer),
-		tabCont,
-	)
-
-	myWindow.SetContent(tabs)
+	myWindow.SetContent(mainContainer)
 	myWindow.ShowAndRun()
 }

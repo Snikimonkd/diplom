@@ -276,7 +276,7 @@ func NormalButtonHandler(baseString, mathExpectationString, dispersionString, am
 	return gistCols, nil
 }
 
-func SimModelingHandler(variantString, amountString string, output *widget.Entry) ([]generator.OneProductModel, error) {
+func OneProductHandler(variantString, amountString string, output *widget.Entry) ([]generator.OneProductModel, error) {
 	variantInt, err := strconv.Atoi(variantString)
 	if err != nil {
 		return nil, errors.New("неправильно задан вариант")
@@ -295,6 +295,29 @@ func SimModelingHandler(variantString, amountString string, output *widget.Entry
 	startingVluesString += "C3=" + fmt.Sprintf("%.2f", ret[0].C3) + "\n"
 	startingVluesString += "B1=" + strconv.Itoa(ret[0].B1) + "\n"
 	startingVluesString += "TT=" + strconv.Itoa(ret[0].TT)
+	output.SetText(startingVluesString)
+
+	return ret, nil
+}
+
+func MultiProductHandler(variantString, amountString string, output *widget.Entry) ([]generator.MultiProductModel, error) {
+	variantInt, err := strconv.Atoi(variantString)
+	if err != nil {
+		return nil, errors.New("неправильно задан вариант")
+	}
+
+	amountInt, err := strconv.Atoi(amountString)
+	if err != nil {
+		return nil, errors.New("неправильно задано кол-во экспериментов")
+	}
+
+	ret := generator.ModelingMultiProduct(variantInt, amountInt)
+
+	startingVluesString := "Исходные данные варианта:\n"
+	startingVluesString += "Кол-во продуктов=" + fmt.Sprintf("%d", ret[0].PRAM) + "\n"
+	startingVluesString += "CC=" + fmt.Sprintf("%d", ret[0].CC) + "\n"
+	startingVluesString += "VOC=" + fmt.Sprintf("%d", ret[0].VOC) + "\n"
+	startingVluesString += "FOC=" + fmt.Sprintf("%d", ret[0].FOC) + "\n"
 	output.SetText(startingVluesString)
 
 	return ret, nil

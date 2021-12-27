@@ -60,12 +60,12 @@ type MultiProductModel struct {
 	TCOST float64
 	// объем заказа i-го продукта
 	EOQ []int
-	// критический уровень завпаса i-го продукта
+	// критический уровень запаса i-го продукта
 	MOP []int
 	// предкритический уровень запаса i-го продукта
 	COP []int
 	// спрос на i-ый продукт в t-ый день
-	D []int // должно быть по закону Пуассона
+	D int // должно быть по закону Пуассона
 	// уровень запаса i-го продукта в конце t-го дня
 	INV []int
 	// кол-во заказов на i-ый продукт в течение времени T
@@ -79,6 +79,8 @@ type MultiProductModel struct {
 	// ежедневные затраты на хранение единицы i-го продукта
 	CC []int
 
+	// количество продуктов
+	PRAM int
 	// текущее время
 	T int
 	// номер эксперимента
@@ -364,7 +366,7 @@ func ModelingOneProduct(variant, amount int) []OneProductModel {
 	return ret
 }
 
-func SortModels(arr []OneProductModel, id int) []OneProductModel {
+func SortModelsOne(arr []OneProductModel, id int) []OneProductModel {
 	for i := 0; i < len(arr); i++ {
 		for j := i + 1; j < len(arr); j++ {
 			switch id {
@@ -463,7 +465,7 @@ func randArr(len, left, right int) []int {
 	return arr
 }
 
-func generateMultiProductModel(products int) MultiProductModel {
+func generateMultiProductModel() MultiProductModel {
 	var model MultiProductModel
 
 	// начальное положение системы
@@ -472,41 +474,43 @@ func generateMultiProductModel(products int) MultiProductModel {
 	model.TCC = 0
 	model.TCOST = 0
 	model.TNJO = 0
-	model.NTO = make([]int, products)
-	model.INV = make([]int, products) // зануляется изначально
 
 	// данные зависящие от варианта
-	model.CC = randArr(products, 0, 100)
-	model.VOC = randArr(products, 0, 20)
+	model.PRAM = randomIntWithBorders(1, 5)
+	model.CC = randArr(model.PRAM, 0, 100)
+	model.VOC = randArr(model.PRAM, 0, 20)
 	model.FOC = randomIntWithBorders(0, 20)
+
+	model.NTO = make([]int, model.PRAM)
+	model.INV = make([]int, model.PRAM) // зануляется изначально
 
 	return model
 }
 
-func ModelingMultiProduct(variant, amountExp, amountProd int) []MultiProductModel {
+func ModelingMultiProduct(variant, amountExp int) []MultiProductModel {
 	seed = variant
 	var ret []MultiProductModel
 
-	for I := 1; I <= amountExp; I++ {
-		model := generateMultiProductModel(amountProd)
+	for k := 0; k < amountExp; k++ {
+		model := generateMultiProductModel()
 
-		model.EOQ = append(model.EOQ, randomIntWithBorders(0, 100))
-		model.MOP = append(model.EOQ, randomIntWithBorders(0, 100))
-		model.COP = append(model.COP, randomIntWithBorders(0, 100))
+		model.EOQ = randArr(model.PRAM, 50, 100)
+		model.MOP = randArr(model.PRAM, 0, 10)
+		model.COP = randArr(model.PRAM, 10, 20)
+		model.ExpNumber = k
+		model.INV = make([]int, model.PRAM)
 
-		model.ExpNumber = I
-
-		for model.T = 1; model.T <= 90; {
-			for i := 1; i <= amountProd; i++ {
-				model.D = append(model.D, randomIntWithBorders(0, 10))
-				model.INV[i] = model.INV[i] - model.D[i]
+		for model.T = 0; model.T < 90; model.T++ {
+			for i := 0; i < model.PRAM; i++ {
+				model.D = randomIntWithBorders(0, 10)
+				model.INV[i] -= model.D
 			}
 
-			for i := 1; i <= amountProd; i++ {
+			for i := 0; i < model.PRAM; i++ {
 				if model.INV[i]-model.MOP[i] <= 0 {
 					model.TNJO++
 					model.TOC += float64(model.FOC)
-					for j := 1; j <= 20; j++ {
+					for j := 0; j < model.PRAM; j++ {
 						if model.INV[j]-model.COP[j] <= 0 {
 							model.NTO[j]++
 							model.TOC += float64(model.VOC[j])
@@ -517,7 +521,7 @@ func ModelingMultiProduct(variant, amountExp, amountProd int) []MultiProductMode
 						}
 					}
 				} else {
-					for j := 1; j <= 20; j++ {
+					for j := 0; j < model.PRAM; j++ {
 						if model.INV[j] > 0 {
 							model.TCC += float64(model.CC[j] * model.INV[j])
 						}
