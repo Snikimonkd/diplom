@@ -93,6 +93,8 @@ func main() {
 		case "Равномерный":
 			{
 				label2.Text = "Нижняя граница"
+				label2.Refresh()
+				label2.Show()
 				input2.SetPlaceHolder("Нижняя граница")
 				input2.Refresh()
 				label3.Text = "Верхняя граница"

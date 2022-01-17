@@ -159,7 +159,7 @@ func ExpGenerate(lyambda, amount, base int) []float64 {
 		randomInt := lcgInt()
 		randomFloat := math.Abs(intToFloat(randomInt))
 
-		res := float64(-1) / float64(lyambda) * math.Log(1-randomFloat)
+		res := float64(-1) / float64(lyambda) * math.Log(randomFloat)
 
 		ret = append(ret, res)
 	}
