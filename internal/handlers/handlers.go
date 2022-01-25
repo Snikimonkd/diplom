@@ -317,8 +317,12 @@ func MultiProductHandler(variantString, amountString string, output *widget.Entr
 	startingVluesString += "Кол-во продуктов=" + fmt.Sprintf("%d", ret[0].PRAM) + "\n"
 	startingVluesString += "CC=" + fmt.Sprintf("%d", ret[0].CC) + "\n"
 	startingVluesString += "VOC=" + fmt.Sprintf("%d", ret[0].VOC) + "\n"
-	startingVluesString += "FOC=" + fmt.Sprintf("%d", ret[0].FOC) + "\n"
-	output.SetText(startingVluesString)
-
+	startingVluesString += "FOC=" + fmt.Sprintf("%d", ret[0].FOC) + "\n\n"
+	for i, v := range ret {
+		startingVluesString += "EOQ" + "(" + fmt.Sprintf("%d", i) + ")=" + fmt.Sprintf("%d", v.EOQ) + "\n"
+		startingVluesString += "MOP" + "(" + fmt.Sprintf("%d", i) + ")=" + fmt.Sprintf("%d", v.MOP) + "\n"
+		startingVluesString += "COP" + "(" + fmt.Sprintf("%d", i) + ")=" + fmt.Sprintf("%d", v.COP) + "\n\n"
+		output.SetText(startingVluesString)
+	}
 	return ret, nil
 }

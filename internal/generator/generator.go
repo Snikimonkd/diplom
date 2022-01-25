@@ -93,7 +93,7 @@ func lcgInt() int {
 }
 
 func intToFloat(randInt int) float64 {
-	return float64(randInt) / float64(math.MaxInt)
+	return float64(randInt) / float64(math.MaxInt64)
 }
 
 func abs(val int) int {
@@ -476,10 +476,10 @@ func generateMultiProductModel() MultiProductModel {
 	model.TNJO = 0
 
 	// данные зависящие от варианта
-	model.PRAM = randomIntWithBorders(1, 5)
-	model.CC = randArr(model.PRAM, 0, 100)
-	model.VOC = randArr(model.PRAM, 0, 20)
-	model.FOC = randomIntWithBorders(0, 20)
+	model.PRAM = randomIntWithBorders(2, 5)
+	model.CC = randArr(model.PRAM, 1, 100)
+	model.VOC = randArr(model.PRAM, 1, 20)
+	model.FOC = randomIntWithBorders(1, 20)
 
 	return model
 }
@@ -491,6 +491,12 @@ func ModelingMultiProduct(variant, amountExp int) []MultiProductModel {
 	model := generateMultiProductModel()
 
 	for k := 0; k < amountExp; k++ {
+
+		model.T = 1
+		model.TOC = 0
+		model.TCC = 0
+		model.TCOST = 0
+		model.TNJO = 0
 
 		model.EOQ = randArr(model.PRAM, 50, 100)
 		model.MOP = randArr(model.PRAM, 0, 10)
