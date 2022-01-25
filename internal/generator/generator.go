@@ -442,7 +442,7 @@ func DispValue(arr []float64) float64 {
 		exp += v / len
 	}
 
-	return math.Sqrt(buf - exp*exp)
+	return buf - exp*exp
 }
 
 func Count(arr []float64, level int) []int {
