@@ -25,7 +25,7 @@ func main() {
 	label0 := models.CreateLabel("Закон распределения")
 	objects = append(objects, label0)
 
-	radio := widget.NewRadioGroup([]string{"Равномерный", "Нормальный", "Экспоненциальный", "Дискретный"}, nil)
+	radio := widget.NewRadioGroup([]string{"Равномерный", "Нормальный", "Экспоненциальный", "Биномиальный"}, nil)
 	radio.SetSelected("Равномерный")
 	radio.Resize(radio.MinSize())
 	objects = append(objects, radio)
@@ -93,6 +93,7 @@ func main() {
 		case "Равномерный":
 			{
 				label2.Text = "Нижняя граница"
+				input2.SetText("0")
 				label2.Refresh()
 				label2.Show()
 				input2.SetPlaceHolder("Нижняя граница")
@@ -101,6 +102,7 @@ func main() {
 				label3.Refresh()
 				label3.Show()
 				input3.SetPlaceHolder("Верхняя граница")
+				input3.SetText("1")
 				input3.Refresh()
 				input3.Show()
 				label6.Show()
@@ -135,7 +137,7 @@ func main() {
 				input6.Show()
 
 			}
-		case "Дискретный":
+		case "Биномиальный":
 			{
 				label2.Text = "Вероятность"
 				label2.Refresh()
@@ -197,7 +199,7 @@ func main() {
 
 				tabCont.Content = container.NewWithoutLayout(newGistCols...)
 			}
-		case "Дискретный":
+		case "Биномиальный":
 			{
 				newGistCols, err := handlers.BinomialButtonHandler(input1.Text, input2.Text, input3.Text, input4.Text, input5.Text, output)
 				if err != nil {

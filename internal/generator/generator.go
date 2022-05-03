@@ -8,44 +8,44 @@ import (
 	"fyne.io/fyne/v2"
 )
 
-var seed int
+var seed int32
 
-const a = 6364136223846793005
-const c = 1442695040888963407
+const a = 1664525
+const c = 1013904223
 
 type OneProductModel struct {
 	// полные издержки системы
-	TC float64
+	TC float32
 	// полные издержки, связанные с организацией поставок
-	TC1 float64
+	TC1 float32
 	// полные издержки, связанные с организацией поставок
-	TC2 float64
+	TC2 float32
 	// полные потери от дефицита продукта на складе
-	TC3 float64
+	TC3 float32
 	// текущее время
-	CLOCK int
+	CLOCK int32
 	// время очередной поставки
-	T int
+	T int32
 	// количество запаса на складе
-	V1 int
+	V1 int32
 	// спрос в i-ый день
-	D int
+	D int32
 	// время необходимое для выполнения j-ого заказа
-	PLT int
+	PLT int32
 	// объем одной поставки
-	EOQ int
+	EOQ int32
 	// точка возобновления запаса
-	ROP int
+	ROP int32
 	// затраты на хранение единицы продукта в течение одного дня
-	C1 float64
+	C1 float32
 	// затраты на организацию одной поставки
-	C2 float64
+	C2 float32
 	// потери, связанные с нехваткой единицы продукта
-	C3 float64
+	C3 float32
 	// начальный уровень запаса
-	B1 int
+	B1 int32
 	// продолжительность рассматриваемого периода
-	TT int
+	TT int32
 
 	// номер эксперимента
 	ExpNumber int
@@ -53,50 +53,50 @@ type OneProductModel struct {
 
 type MultiProductModel struct {
 	// затраты на организацию поставки
-	TOC float64
+	TOC float32
 	// затраты на хранение запасов
-	TCC float64
+	TCC float32
 	// полные затраты
-	TCOST float64
+	TCOST float32
 	// объем заказа i-го продукта
-	EOQ []int
+	EOQ []int32
 	// критический уровень запаса i-го продукта
-	MOP []int
+	MOP []int32
 	// предкритический уровень запаса i-го продукта
-	COP []int
+	COP []int32
 	// спрос на i-ый продукт в t-ый день
-	D int // должно быть по закону Пуассона
+	D int32 // должно быть по закону Пуассона
 	// уровень запаса i-го продукта в конце t-го дня
-	INV []int
+	INV []int32
 	// кол-во заказов на i-ый продукт в течение времени T
-	NTO []int
+	NTO []int32
 	// общее число заказов в течение времени
-	TNJO int
+	TNJO int32
 	// затраты на оформление одного набора заказа
-	FOC int
+	FOC int32
 	// переменные затраты на заказ i-го продукта
-	VOC []int
+	VOC []int32
 	// ежедневные затраты на хранение единицы i-го продукта
-	CC []int
+	CC []int32
 
 	// количество продуктов
-	PRAM int
+	PRAM int32
 	// текущее время
-	T int
+	T int32
 	// номер эксперимента
-	ExpNumber int
+	ExpNumber int32
 }
 
-func lcgInt() int {
+func lcgInt() int32 {
 	seed = (a*seed + c)
 	return seed
 }
 
-func intToFloat(randInt int) float64 {
-	return float64(randInt) / float64(math.MaxInt)
+func intToFloat(randInt int32) float32 {
+	return float32(randInt) / float32(math.MaxInt32)
 }
 
-func abs(val int) int {
+func abs(val int32) int32 {
 	if val < 0 {
 		return val * -1
 	}
@@ -104,29 +104,29 @@ func abs(val int) int {
 	return val
 }
 
-func randomIntWithBorders(lower, upper int) int {
+func randomIntWithBorders(lower, upper int32) int32 {
 	return abs(lcgInt())%(upper-lower) + lower
 }
 
-func randomFloatWithBorders(lower, upper int) float64 {
-	return math.Abs(intToFloat(lcgInt()))*float64(upper-lower) + float64(lower)
+func randomFloatWithBorders(lower, upper int32) float32 {
+	return float32(math.Abs(float64(intToFloat(lcgInt())))*float64(upper-lower) + float64(lower))
 }
 
-func LinearGenerate(lower, upper, amount, base int) []float64 {
-	var ret []float64
+func LinearGenerate(lower, upper, amount, base int32) []float32 {
+	var ret []float32
 	seed = base
-	for i := 0; i < amount; i++ {
+	for i := 0; i < int(amount); i++ {
 		randomInt := lcgInt()
 		randomFloat := intToFloat(randomInt)
 
-		ret = append(ret, math.Abs(randomFloat)*float64(upper-lower)+float64(lower))
+		ret = append(ret, float32(math.Abs(float64(randomFloat))*float64(upper-lower)+float64(lower)))
 	}
 
 	return ret
 }
 
-func normalPair() (float64, float64, float64) {
-	var s, x, y float64
+func normalPair() (float32, float32, float32) {
+	var s, x, y float32
 	s = 0
 	for s == 0 || s > 1 {
 		x = intToFloat(lcgInt())
@@ -137,37 +137,37 @@ func normalPair() (float64, float64, float64) {
 	return s, x, y
 }
 
-func NormalGenerate(mathExpectation, dispersion, amount, base int) []float64 {
-	var ret []float64
+func NormalGenerate(mathExpectation, dispersion, amount, base int32) []float32 {
+	var ret []float32
 	seed = base
-	for i := 0; i < amount/2; i++ {
+	for i := 0; i < int(amount/2); i++ {
 		s, x, y := normalPair()
 
-		z0 := x * math.Sqrt(-2*math.Log(s)/s)
-		z1 := y * math.Sqrt(-2*math.Log(s)/s)
+		z0 := x * float32(math.Sqrt(float64(-2*float32(math.Log(float64(s)))/s)))
+		z1 := y * float32(math.Sqrt(float64(-2*float32(math.Log(float64(s)))/s)))
 
-		ret = append(ret, (float64(mathExpectation) + float64(dispersion)*z0), (float64(mathExpectation) + float64(dispersion)*z1))
+		ret = append(ret, (float32(mathExpectation) + float32(dispersion)*z0), (float32(mathExpectation) + float32(dispersion)*z1))
 	}
 
 	return ret
 }
 
-func ExpGenerate(lyambda, amount, base int) []float64 {
-	var ret []float64
+func ExpGenerate(lyambda, amount, base int32) []float32 {
+	var ret []float32
 	seed = base
-	for i := 0; i < amount; i++ {
+	for i := 0; i < int(amount); i++ {
 		randomInt := lcgInt()
-		randomFloat := math.Abs(intToFloat(randomInt))
+		randomFloat := math.Abs(float64(intToFloat(randomInt)))
 
 		res := float64(-1) / float64(lyambda) * math.Log(randomFloat)
 
-		ret = append(ret, res)
+		ret = append(ret, float32(res))
 	}
 
 	return ret
 }
 
-func partition(arr []float64, low, high int) ([]float64, int) {
+func partition(arr []float32, low, high int32) ([]float32, int32) {
 	pivot := arr[high]
 	i := low
 	for j := low; j < high; j++ {
@@ -180,9 +180,9 @@ func partition(arr []float64, low, high int) ([]float64, int) {
 	return arr, i
 }
 
-func quickSort(arr []float64, low, high int) []float64 {
+func quickSort(arr []float32, low, high int32) []float32 {
 	if low < high {
-		var p int
+		var p int32
 		arr, p = partition(arr, low, high)
 		arr = quickSort(arr, low, p-1)
 		arr = quickSort(arr, p+1, high)
@@ -190,15 +190,15 @@ func quickSort(arr []float64, low, high int) []float64 {
 	return arr
 }
 
-func distribution(arr []float64, cols int) []int {
-	sortArr := quickSort(arr, 0, len(arr)-1)
+func distribution(arr []float32, cols int32) []int32 {
+	sortArr := quickSort(arr, 0, int32(len(arr)-1))
 
 	min := sortArr[0]
 	max := sortArr[len(sortArr)-1]
 
-	groupSize := (max - min) / float64(cols)
+	groupSize := (max - min) / float32(cols)
 
-	distr := make([]int, cols)
+	distr := make([]int32, cols)
 	distr = append(distr, 0)
 	i := 0
 
@@ -217,8 +217,8 @@ func distribution(arr []float64, cols int) []int {
 	return distr
 }
 
-func findMax(arr []int) int {
-	max := 0
+func findMax(arr []int32) int32 {
+	var max int32
 	for _, v := range arr {
 		if v > max {
 			max = v
@@ -228,18 +228,18 @@ func findMax(arr []int) int {
 	return max
 }
 
-func Draw(arr []float64, cols int) []fyne.CanvasObject {
+func Draw(arr []float32, cols int32) []fyne.CanvasObject {
 	distr := distribution(arr, cols)
 
 	max := findMax(distr)
 
-	width := int(models.WindowWidth-30)/cols - 1
+	width := int32(models.WindowWidth-30)/cols - 1
 	height := 700 / max
 
 	ret := []fyne.CanvasObject{}
 
 	for i, v := range distr {
-		pos := fyne.NewPos(float32(i*width)+models.DefaultHorizontalPadding+float32(i), float32(750-height*v))
+		pos := fyne.NewPos(float32(int32(i)*width)+models.DefaultHorizontalPadding+float32(i), float32(750-height*v))
 		size := fyne.NewSize(float32(width), float32(height*v))
 		ret = append(ret, models.CreateRectangel(size, pos, color.Black))
 	}
@@ -247,9 +247,9 @@ func Draw(arr []float64, cols int) []fyne.CanvasObject {
 	return ret
 }
 
-func bernoulli(p float64) float64 {
+func bernoulli(p float32) float32 {
 	q := 1.0 - p
-	U := float64(math.Abs(float64(intToFloat(lcgInt()))))
+	U := float32(math.Abs(float64(intToFloat(lcgInt()))))
 	if U > q {
 		return 1
 	}
@@ -257,19 +257,19 @@ func bernoulli(p float64) float64 {
 	return 0
 }
 
-func binomialBernoulli(p float64, n int) float64 {
-	var sum float64 = 0
-	for i := 0; i < n; i++ {
+func binomialBernoulli(p float32, n int32) float32 {
+	var sum float32 = 0
+	for i := 0; i < int(n); i++ {
 		sum += bernoulli(p)
 	}
 
 	return sum
 }
 
-func Binomial(p float64, n, amount, base int) []float64 {
+func Binomial(p float32, n, amount, base int32) []float32 {
 	seed = base
-	ret := []float64{}
-	for i := 0; i < amount; i++ {
+	ret := []float32{}
+	for i := 0; i < int(amount); i++ {
 		ret = append(ret, binomialBernoulli(p, n))
 	}
 
@@ -320,11 +320,11 @@ func generateOneProductModel() OneProductModel {
 	return model
 }
 
-func ModelingOneProduct(variant, amount int) []OneProductModel {
+func ModelingOneProduct(variant, amount int32) []OneProductModel {
 	seed = variant
 	var ret []OneProductModel
 
-	for i := 0; i < amount; i++ {
+	for i := 0; i < int(amount); i++ {
 		model := generateOneProductModel()
 		model.EOQ = randomIntWithBorders(20, 50)
 		model.ROP = randomIntWithBorders(40, 70)
@@ -345,11 +345,11 @@ func ModelingOneProduct(variant, amount int) []OneProductModel {
 			model.V1 -= model.D
 
 			if model.V1 < 0 {
-				model.TC3 -= float64(model.V1) * model.C3
+				model.TC3 -= float32(model.V1) * model.C3
 				model.V1 = 0
 			}
 
-			model.TC1 += float64(model.V1) * model.C1
+			model.TC1 += float32(model.V1) * model.C1
 
 			if model.ROP >= model.V1 {
 				if model.T <= model.CLOCK {
@@ -419,10 +419,10 @@ func SortModelsOne(arr []OneProductModel, id int) []OneProductModel {
 	return arr
 }
 
-func ExpValue(arr []float64) float64 {
-	res := 0.0
+func ExpValue(arr []float32) float32 {
+	var res float32 = 0
 
-	len := float64(len(arr))
+	len := float32(len(arr))
 
 	for _, v := range arr {
 		res += v / len
@@ -431,22 +431,22 @@ func ExpValue(arr []float64) float64 {
 	return res
 }
 
-func DispValue(arr []float64) float64 {
-	exp := 0.0
-	buf := 0.0
+func DispValue(arr []float32) float32 {
+	var exp float32 = 0.0
+	var buf float32 = 0.0
 
-	len := float64(len(arr))
+	len := float32(len(arr))
 
 	for _, v := range arr {
 		buf = buf + v*v/len
 		exp += v / len
 	}
 
-	return math.Sqrt(buf - exp*exp)
+	return float32(math.Sqrt(float64(buf - exp*exp)))
 }
 
-func Count(arr []float64, level int) []int {
-	res := make([]int, level+1)
+func Count(arr []float32, level int32) []int32 {
+	res := make([]int32, level+1)
 
 	for _, v := range arr {
 		res[int(v)]++
@@ -455,10 +455,10 @@ func Count(arr []float64, level int) []int {
 	return res
 }
 
-func randArr(len, left, right int) []int {
-	var arr []int
+func randArr(len, left, right int32) []int32 {
+	var arr []int32
 
-	for i := 0; i < len; i++ {
+	for i := 0; i < int(len); i++ {
 		arr = append(arr, randomIntWithBorders(left, right))
 	}
 
@@ -484,47 +484,47 @@ func generateMultiProductModel() MultiProductModel {
 	return model
 }
 
-func ModelingMultiProduct(variant, amountExp int) []MultiProductModel {
+func ModelingMultiProduct(variant, amountExp int32) []MultiProductModel {
 	seed = variant
 	var ret []MultiProductModel
 
 	model := generateMultiProductModel()
 
-	for k := 0; k < amountExp; k++ {
+	for k := 0; k < int(amountExp); k++ {
 
 		model.EOQ = randArr(model.PRAM, 50, 100)
 		model.MOP = randArr(model.PRAM, 0, 10)
 		model.COP = randArr(model.PRAM, 10, 20)
 
-		model.ExpNumber = k
+		model.ExpNumber = int32(k)
 
-		model.NTO = make([]int, model.PRAM)
-		model.INV = make([]int, model.PRAM)
+		model.NTO = make([]int32, model.PRAM)
+		model.INV = make([]int32, model.PRAM)
 
 		for model.T = 0; model.T < 90; model.T++ {
-			for i := 0; i < model.PRAM; i++ {
+			for i := 0; i < int(model.PRAM); i++ {
 				model.D = randomIntWithBorders(0, 10)
 				model.INV[i] -= model.D
 			}
 
-			for i := 0; i < model.PRAM; i++ {
+			for i := 0; i < int(model.PRAM); i++ {
 				if model.INV[i]-model.MOP[i] <= 0 {
 					model.TNJO++
-					model.TOC += float64(model.FOC)
-					for j := 0; j < model.PRAM; j++ {
+					model.TOC += float32(model.FOC)
+					for j := 0; j < int(model.PRAM); j++ {
 						if model.INV[j]-model.COP[j] <= 0 {
 							model.NTO[j]++
-							model.TOC += float64(model.VOC[j])
+							model.TOC += float32(model.VOC[j])
 							model.INV[j] += model.EOQ[j]
 							if model.INV[j] > 0 {
-								model.TCC += float64(model.CC[j] * model.INV[j])
+								model.TCC += float32(model.CC[j] * model.INV[j])
 							}
 						}
 					}
 				} else {
-					for j := 0; j < model.PRAM; j++ {
+					for j := 0; j < int(model.PRAM); j++ {
 						if model.INV[j] > 0 {
-							model.TCC += float64(model.CC[j] * model.INV[j])
+							model.TCC += float32(model.CC[j] * model.INV[j])
 						}
 					}
 				}

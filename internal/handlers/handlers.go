@@ -17,7 +17,7 @@ func BinomialButtonHandler(baseString, probabilityString, levelString, amountToG
 		return nil, errors.New("неправильно задана база генератора")
 	}
 
-	probabilityFloat, err := strconv.ParseFloat(probabilityString, 64)
+	probabilityFloat, err := strconv.ParseFloat(probabilityString, 32)
 	if err != nil {
 		return nil, errors.New("неправильно задана вероятность")
 	}
@@ -49,12 +49,18 @@ func BinomialButtonHandler(baseString, probabilityString, levelString, amountToG
 		return nil, errors.New("размер выборки не может быть больше количества для генерации")
 	}
 
-	arr := generator.Binomial(probabilityFloat, levelInt, amountToGenerateInt, baseInt)
+	arr := generator.Binomial(float32(probabilityFloat), int32(levelInt), int32(amountToGenerateInt), int32(baseInt))
 
 	resultString := "Теоретические значения вероятностей для полинома " + levelString + " степени:\n"
 
 	for i := 0; i <= levelInt; i++ {
 		resultString += "P(" + strconv.Itoa(i) + ")=" + fmt.Sprintf("%f\n", generator.Ver(probabilityFloat, levelInt, i))
+	}
+
+	resAmount := generator.Count(arr, int32(levelInt))
+
+	for i, v := range resAmount {
+		resultString += "Кол-во сгенерированных " + fmt.Sprint(i) + " : " + fmt.Sprint(v) + "\n"
 	}
 
 	i := 0
@@ -68,13 +74,7 @@ func BinomialButtonHandler(baseString, probabilityString, levelString, amountToG
 	}
 	resultString += "\n"
 
-	resAmount := generator.Count(arr, levelInt)
-
-	for i, v := range resAmount {
-		resultString += "Кол-во сгенерированных " + fmt.Sprint(i) + " : " + fmt.Sprint(v) + "\n"
-	}
-
-	gistCols := generator.Draw(arr, levelInt+1)
+	gistCols := generator.Draw(arr, int32(levelInt+1))
 
 	output.SetText(resultString)
 
@@ -118,13 +118,13 @@ func ExpButtonHandler(baseString, lyambdaString, amountToGenerateString, amountT
 		return nil, errors.New("количество стобцов гистограммы не может быть больше выборки")
 	}
 
-	arr := generator.ExpGenerate(lyambdaInt, amountToGenerateInt, baseInt)
+	arr := generator.ExpGenerate(int32(lyambdaInt), int32(amountToGenerateInt), int32(baseInt))
 	var resultString string
 	for _, v := range arr {
 		resultString += fmt.Sprintf("%f", v) + "\n"
 	}
 
-	gistCols := generator.Draw(arr[:amountToDrawInt], colsInt)
+	gistCols := generator.Draw(arr[:amountToDrawInt], int32(colsInt))
 
 	output.SetText(resultString)
 
@@ -185,13 +185,13 @@ func LinearButtonHandler(baseString, lowerString, upperString, amountToGenerateS
 		return nil, errors.New("количество стобцов гистограммы не может быть больше выборки")
 	}
 
-	arr := generator.LinearGenerate(lowerInt, upperInt, amountToGenerateInt, baseInt)
+	arr := generator.LinearGenerate(int32(lowerInt), int32(upperInt), int32(amountToGenerateInt), int32(baseInt))
 	var resultString string
 	for _, v := range arr {
 		resultString += fmt.Sprintf("%f", v) + "\n"
 	}
 
-	gistCols := generator.Draw(arr[:amountToDrawInt], colsInt)
+	gistCols := generator.Draw(arr[:amountToDrawInt], int32(colsInt))
 
 	output.SetText(resultString)
 
@@ -252,13 +252,13 @@ func NormalButtonHandler(baseString, mathExpectationString, dispersionString, am
 		return nil, errors.New("количество стобцов гистограммы не может быть больше выборки")
 	}
 
-	arr := generator.NormalGenerate(mathExpectationInt, dispersionInt, amountToGenerateInt, baseInt)
+	arr := generator.NormalGenerate(int32(mathExpectationInt), int32(dispersionInt), int32(amountToGenerateInt), int32(baseInt))
 	var resultString string
 	for _, v := range arr {
 		resultString += fmt.Sprintf("%f", v) + "\n"
 	}
 
-	gistCols := generator.Draw(arr[:amountToDrawInt], colsInt)
+	gistCols := generator.Draw(arr[:amountToDrawInt], int32(colsInt))
 
 	output.SetText(resultString)
 
@@ -287,14 +287,14 @@ func OneProductHandler(variantString, amountString string, output *widget.Entry)
 		return nil, errors.New("неправильно задано кол-во экспериментов")
 	}
 
-	ret := generator.ModelingOneProduct(variantInt, amountInt)
+	ret := generator.ModelingOneProduct(int32(variantInt), int32(amountInt))
 
 	startingVluesString := "Исходные данные варианта:\n"
 	startingVluesString += "C1=" + fmt.Sprintf("%.2f", ret[0].C1) + "\n"
 	startingVluesString += "C2=" + fmt.Sprintf("%.2f", ret[0].C2) + "\n"
 	startingVluesString += "C3=" + fmt.Sprintf("%.2f", ret[0].C3) + "\n"
-	startingVluesString += "B1=" + strconv.Itoa(ret[0].B1) + "\n"
-	startingVluesString += "TT=" + strconv.Itoa(ret[0].TT)
+	startingVluesString += "B1=" + strconv.Itoa(int(ret[0].B1)) + "\n"
+	startingVluesString += "TT=" + strconv.Itoa(int(ret[0].TT))
 	output.SetText(startingVluesString)
 
 	return ret, nil
@@ -311,7 +311,7 @@ func MultiProductHandler(variantString, amountString string, output *widget.Entr
 		return nil, errors.New("неправильно задано кол-во экспериментов")
 	}
 
-	ret := generator.ModelingMultiProduct(variantInt, amountInt)
+	ret := generator.ModelingMultiProduct(int32(variantInt), int32(amountInt))
 
 	startingVluesString := "Исходные данные варианта:\n"
 	startingVluesString += "Кол-во продуктов=" + fmt.Sprintf("%d", ret[0].PRAM) + "\n"
