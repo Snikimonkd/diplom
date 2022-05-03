@@ -20,6 +20,7 @@ require (
 	github.com/hashicorp/go-version v1.0.0 // indirect
 	github.com/jackmordaunt/icns v0.0.0-20181231085925-4f16af745526 // indirect
 	github.com/josephspurrier/goversioninfo v1.3.0 // indirect
+	github.com/lucor/fyne-cross/v2 v2.2.1 // indirect
 	github.com/lucor/goinfo v0.0.0-20210802170112-c078a2b0f08b // indirect
 	github.com/mitchellh/gox v1.0.1 // indirect
 	github.com/mitchellh/iochan v1.0.0 // indirect

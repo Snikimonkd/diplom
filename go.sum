@@ -49,6 +49,8 @@ github.com/josephspurrier/goversioninfo v1.3.0/go.mod h1:JWzv5rKQr+MmW+LvM412ToT
 github.com/kr/pty v1.1.1/go.mod h1:pFQYn66WHrOpPYNljwOMqo10TkYh1fy3cYio2l3bCsQ=
 github.com/kr/text v0.1.0 h1:45sCR5RtlFHMR4UwH9sdQ5TC8v0qDQCHnXt+kaKSTVE=
 github.com/kr/text v0.1.0/go.mod h1:4Jbv+DJW3UT/LiOwJeYQe1efqtUx/iVham/4vfdArNI=
+github.com/lucor/fyne-cross/v2 v2.2.1 h1:/USOnKufLH1NmKrVrfmAj9D7X0t4wZXCVyaHHREOcKA=
+github.com/lucor/fyne-cross/v2 v2.2.1/go.mod h1:GTxpNyhe4VL5yuyiXmTGkJ+cD+4wrVrfvZqjmWTL+x0=
 github.com/lucor/goinfo v0.0.0-20200401173949-526b5363a13a/go.mod h1:ORP3/rB5IsulLEBwQZCJyyV6niqmI7P4EWSmkug+1Ng=
 github.com/lucor/goinfo v0.0.0-20210802170112-c078a2b0f08b h1:tLSDWcFhT0WRlnsFszh4iaFTexWF8mmccGTk88Siq7Q=
 github.com/lucor/goinfo v0.0.0-20210802170112-c078a2b0f08b/go.mod h1:PRq09yoB+Q2OJReAmwzKivcYyremnibWGbK7WfftHzc=
