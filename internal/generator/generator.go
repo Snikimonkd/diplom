@@ -92,13 +92,8 @@ func lcgInt() int32 {
 	return seed
 }
 
-<<<<<<< HEAD
 func intToFloat(randInt int32) float32 {
 	return float32(randInt) / float32(math.MaxInt32)
-=======
-func intToFloat(randInt int) float64 {
-	return float64(randInt) / float64(math.MaxInt64)
->>>>>>> b27fa579158f755dd3dd26146dab2914aa7edca6
 }
 
 func abs(val int32) int32 {
