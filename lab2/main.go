@@ -173,7 +173,7 @@ func main() {
 			}
 		case "Многопродуктовая":
 			{
-				//retMulti = generator.SortModelsMulti(retMulti, id.Col)
+				retMulti = generator.SortModelsMulti(retMulti, id.Col)
 				tableOne.Refresh()
 			}
 		}

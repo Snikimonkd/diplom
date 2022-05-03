@@ -213,6 +213,14 @@ func main() {
 		}
 	}
 
+	myWindow.Canvas().SetOnTypedKey(func(ke *fyne.KeyEvent) {
+		key := *ke
+
+		if key.Name == fyne.KeyReturn || key.Name == fyne.KeyEnter {
+			button.Tapped(nil)
+		}
+	})
+
 	myWindow.SetContent(tabs)
 	myWindow.ShowAndRun()
 }

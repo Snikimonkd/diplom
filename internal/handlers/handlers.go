@@ -319,9 +319,10 @@ func MultiProductHandler(variantString, amountString string, output *widget.Entr
 	startingVluesString += "VOC=" + fmt.Sprintf("%d", ret[0].VOC) + "\n"
 	startingVluesString += "FOC=" + fmt.Sprintf("%d", ret[0].FOC) + "\n\n"
 	for i, v := range ret {
-		startingVluesString += "EOQ" + "(" + fmt.Sprintf("%d", i) + ")=" + fmt.Sprintf("%d", v.EOQ) + "\n"
-		startingVluesString += "MOP" + "(" + fmt.Sprintf("%d", i) + ")=" + fmt.Sprintf("%d", v.MOP) + "\n"
-		startingVluesString += "COP" + "(" + fmt.Sprintf("%d", i) + ")=" + fmt.Sprintf("%d", v.COP) + "\n\n"
+		startingVluesString += fmt.Sprintf("Эксперимент №%d:\n", i+1)
+		startingVluesString += "EOQ" + "(" + fmt.Sprintf("%d", i+1) + ")=" + fmt.Sprintf("%d", v.EOQ) + "\n"
+		startingVluesString += "MOP" + "(" + fmt.Sprintf("%d", i+1) + ")=" + fmt.Sprintf("%d", v.MOP) + "\n"
+		startingVluesString += "COP" + "(" + fmt.Sprintf("%d", i+1) + ")=" + fmt.Sprintf("%d", v.COP) + "\n\n"
 		output.SetText(startingVluesString)
 	}
 	return ret, nil

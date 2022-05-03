@@ -419,6 +419,41 @@ func SortModelsOne(arr []OneProductModel, id int) []OneProductModel {
 	return arr
 }
 
+func SortModelsMulti(arr []MultiProductModel, id int) []MultiProductModel {
+	for i := 0; i < len(arr); i++ {
+		for j := i + 1; j < len(arr); j++ {
+			switch id {
+			case 0:
+				{
+					if arr[j].ExpNumber < arr[i].ExpNumber {
+						arr[j], arr[i] = arr[i], arr[j]
+					}
+				}
+			case 1:
+				{
+					if arr[j].TOC < arr[i].TOC {
+						arr[j], arr[i] = arr[i], arr[j]
+					}
+				}
+			case 2:
+				{
+					if arr[j].TCC < arr[i].TCC {
+						arr[j], arr[i] = arr[i], arr[j]
+					}
+				}
+			case 3:
+				{
+					if arr[j].TCOST < arr[i].TCOST {
+						arr[j], arr[i] = arr[i], arr[j]
+					}
+				}
+			}
+		}
+	}
+
+	return arr
+}
+
 func ExpValue(arr []float32) float32 {
 	var res float32 = 0
 
@@ -502,7 +537,7 @@ func ModelingMultiProduct(variant, amountExp int32) []MultiProductModel {
 		model.MOP = randArr(model.PRAM, 0, 10)
 		model.COP = randArr(model.PRAM, 10, 20)
 
-		model.ExpNumber = int32(k)
+		model.ExpNumber = int32(k + 1)
 
 		model.NTO = make([]int32, model.PRAM)
 		model.INV = make([]int32, model.PRAM)
